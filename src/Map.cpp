@@ -1,17 +1,24 @@
-#include <fstream>
-#include <iostream>
-#include "raylib.h"
 #include "../include/Map.h"
-#include "../include/Utils.h"
 
-Map::Map() = default;
-
-Map::Map(const std::string &file_name, char came_from) {
-    this->came_from = came_from;
+Map::Map(const std::string &file_name, char came_from) : came_from(came_from), is_window_opened(false), width(CONSTANTS::MAP_WIDTH), height(CONSTANTS::MAP_HEIGHT), block_size(CONSTANTS::BLOCK_SIZE) {
     load(file_name);
 }
 
 Map::~Map() = default;
+
+void Map::draw(){
+    int offset_x = 0, offset_y = 0;
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            if (map[i][j] == WALL){
+                DrawRectangle(offset_x, offset_y, block_size, block_size, BLUE);
+            }
+            offset_x += block_size;
+        }
+        offset_x = 0;
+        offset_y += block_size;
+    }
+}
 
 void Map::load(const std::string& file_name){
     if (!map.empty()){
@@ -20,33 +27,36 @@ void Map::load(const std::string& file_name){
 
     std::ifstream file(file_name);
 
-    std::string line;
-    while (std::getline(file, line)){
-        map.push_back(line);
+    if (file.is_open()){
+        std::string line;
+        while (std::getline(file, line)){
+            map.push_back(line);
+        }
+
+        file.close();
+        buildWalls();
+    } else {
+        std::cout << "Error: failed to open " << file_name << std::endl;
     }
-
-    file.close();
-
-    buildWalls();
 }
 
 void Map::buildWalls(){
     if (came_from == 'L'){
-        map[7][0] = '#';
-        map[8][0] = '#';
-        map[9][0] = '#';
+        map[7][0] = WALL;
+        map[8][0] = WALL;
+        map[9][0] = WALL;
     } else if (came_from == 'D'){
-        map[height - 1][11] = '#';
-        map[height - 1][12] = '#';
-        map[height - 1][13] = '#';
+        map[height - 1][11] = WALL;
+        map[height - 1][12] = WALL;
+        map[height - 1][13] = WALL;
     } else if (came_from == 'U'){
-        map[0][11] = '#';
-        map[0][12] = '#';
-        map[0][13] = '#';
+        map[0][11] = WALL;
+        map[0][12] = WALL;
+        map[0][13] = WALL;
     } else {
-        map[7][width - 1] = '#';
-        map[8][width - 1] = '#';
-        map[9][width - 1] = '#';
+        map[7][width - 1] = WALL;
+        map[8][width - 1] = WALL;
+        map[9][width - 1] = WALL;
     };
 }
 
@@ -82,20 +92,6 @@ bool Map::isOutOfMapPlayer(Vector2 player_pos) {
     return false;
 }
 
-void Map::draw(){
-    int offset_x = 0, offset_y = 0;
-    for (int i = 0; i < height; i++){
-        for (int j = 0; j < width; j++){
-            if (map[i][j] == '#'){
-                DrawRectangle(offset_x, offset_y, block_size, block_size, BLUE);
-            }
-            offset_x += block_size;
-        }
-        offset_x = 0;
-        offset_y += block_size;
-    }
-}
-
 std::vector<Vector2> Map::getEnemiesPositions(){
     std::vector<Vector2> positions;
     for (int i = 0; i < height; i++){
@@ -110,7 +106,7 @@ std::vector<Vector2> Map::getEnemiesPositions(){
     return positions;
 }
 
-bool* Map::getMovingDirectionsForEnemy(Vector2 pos){
+bool* Map::getMovingDirectionsForEnemy(Vector2 pos) const {
     int i = (int) pos.y / 50, j = (int) pos.x / 50;
 
     bool* dirs = new bool[4];
@@ -118,16 +114,16 @@ bool* Map::getMovingDirectionsForEnemy(Vector2 pos){
     dirs[1] = false;
     dirs[2] = false;
     dirs[3] = false;
-    if (map[i - 1][j] != '#'){
+    if (map[i - 1][j] != WALL){
         dirs[0] = true;
     }
-    if (map[i][j + 1] != '#'){
+    if (map[i][j + 1] != WALL){
         dirs[1] = true;
     }
-    if (map[i + 1][j] != '#'){
+    if (map[i + 1][j] != WALL){
         dirs[2] = true;
     }
-    if (map[i][j - 1] != '#'){
+    if (map[i][j - 1] != WALL){
         dirs[3] = true;
     }
 
@@ -175,7 +171,7 @@ bool Map::isWallOrIsOutOfMapBullet(Vector2 position){
     if (j < 0 || i < 0 || j >= height || i >= width){
         return true;
     }
-    if (map[j][i] == '#'){
+    if (map[j][i] == WALL){
         return true;
     }
     return false;
@@ -191,4 +187,12 @@ std::string Map::findPathToPlayer(Vector2 player_pos, Vector2 enemy_pos) const {
 
 std::vector<std::string> Map::getMap() const {
     return map;
+}
+
+void Map::setWindowOpened(bool opened){
+    is_window_opened = opened;
+}
+
+bool Map::getWindowOpened() const {
+    return is_window_opened;
 }

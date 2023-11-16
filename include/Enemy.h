@@ -1,21 +1,27 @@
 #pragma once
 
-#include <string>
+#include <iostream>
 #include <vector>
+#include <random>
+#include <string>
+#include <cstdlib>
+#include <ctime>
 #include "raylib.h"
 #include "Bullet.h"
+#include "Constants.h"
 
 class Enemy {
 public:
-    Enemy();
     Enemy(Vector2 pos);
 
     ~Enemy();
 
+    void draw() const;
+
     bool gotHit(Vector2 bullet_end_pos) const;
     bool touchedPlayer(Vector2 player_pos) const;
 
-    void move(const std::string& path);
+    void move();
     void shoot(Vector2 player);
     char determineLastMoveForShooting(Vector2 player, char for_what) const;
     bool canShoot() const;
@@ -25,8 +31,8 @@ public:
     Vector2 getPosition();
 
     void loadImages();
-    void draw();
-    Texture2D getEnemyTexture();
+
+    [[nodiscard]] Texture2D getEnemyTexture() const;
 
     void setDestruction();
     bool getDestruction();
@@ -35,13 +41,13 @@ public:
 
     std::vector<Bullet>* getBullets();
 
-    void determineMoving(bool* dirs);
+    void determineMoving(const bool* dirs);
 private:
     Vector2 position;
 
     Texture2D images[4];
 
-    float speed = 0.05;
+    float speed;
     char last_move = 'D';
 
     bool destroy = false;
@@ -52,6 +58,6 @@ private:
     std::vector<int> seconds_to_wait_for_shooting = {1, 2, 3};
 
     std::string moving_dirs;
-    double walked_distance = 0;
+    float walked_distance = 0;
     int moving_index = 0;
 };

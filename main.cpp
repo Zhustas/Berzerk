@@ -1,53 +1,55 @@
+#include <vector>
 #include "raylib.h"
 #include "include/HighScoresWindow.h"
 #include "include/Map.h"
 #include "include/Player.h"
 #include "include/Enemy.h"
-#include "include/CongratulationsWIndow.h"
+#include "include/Bullet.h"
+#include "include/CongratulationsWindow.h"
 #include "include/Utils.h"
+#include "include/Constants.h"
 
 int main(){
-    bool is_in_highscore_window = true;
-    HighScoresWindow highScoresWindow(CONSTANTS::WINDOW_WIDTH, CONSTANTS::WINDOW_HEIGHT);
+    HighScoresWindow highScoresWindow;
 
-    bool playing = false;
-    std::string current_level = getRandomMap("");
-    Map map(current_level, 'L');
+    std::string currentLevel = getRandomMap(""), newLevel;
+    Map map(currentLevel, 'L');
+    bool restart_level = true;
+
     Player player(map.getPlayerPosition(), map.getWhereCameFrom());
     std::vector<Bullet>* playerBullets;
 
     std::vector<Enemy> enemies;
-    std::vector<Bullet>* enemy_bullets;
-    std::vector<Vector2> positions_of_enemies = map.getEnemiesPositions();
+    std::vector<int> enemyIndexes;
+    std::vector<Bullet>* enemyBullets;
+    std::vector<Vector2> positionsOfEnemies = map.getEnemiesPositions();
 
-    CongratulationsWindow congratulationsWindow(CONSTANTS::WINDOW_WIDTH);
-    bool in_congratulations_window = false;
+    CongratulationsWindow congratulationsWindow;
 
-    InitWindow(CONSTANTS::WINDOW_WIDTH, CONSTANTS::WINDOW_HEIGHT, CONSTANTS::TITLE);
+    InitWindow(CONSTANTS::WINDOW_WIDTH, CONSTANTS::WINDOW_HEIGHT, CONSTANTS::TITLE.c_str());
     player.loadImages();
+    Texture2D* imagesOfEnemy = getEnemyImages();
 
-    Texture2D* images_of_enemy = getEnemyImages();
-    for (int i = 0; i < positions_of_enemies.size(); i++){
-        enemies.emplace_back(positions_of_enemies[i]);
-        enemies[i].determineMoving(map.getMovingDirectionsForEnemy(positions_of_enemies[i]));
-        enemies[i].setImages(images_of_enemy);
+    for (int i = 0; i < positionsOfEnemies.size(); i++){
+        enemies.emplace_back(positionsOfEnemies[i]);
+        enemies[i].setImages(imagesOfEnemy);
+        enemies[i].determineMoving(map.getMovingDirectionsForEnemy(positionsOfEnemies[i]));
     }
 
     while (!WindowShouldClose()){
-        if (is_in_highscore_window){
+        if (highScoresWindow.getWindowOpened()){
             if (highScoresWindow.readyToPlay()){
-                playing = true;
-                is_in_highscore_window = false;
+                highScoresWindow.setWindowOpened(false);
+                map.setWindowOpened(true);
             }
-        }
-        if (playing){
+        } else if (map.getWindowOpened()){
             if (player.getLives() == 0){
-                playing = false;
+                map.setWindowOpened(false);
                 if (player.getPoints() != 0){
-                    in_congratulations_window = true;
+                    congratulationsWindow.setWindowOpened(true);
                     congratulationsWindow.setScore(player.getPoints());
                 } else {
-                    is_in_highscore_window = true;
+                    highScoresWindow.setWindowOpened(true);
                 }
             }
             player.move();
@@ -55,122 +57,96 @@ int main(){
                 player.cancelMoves();
             }
             if (map.isOutOfMapPlayer(player.getPosition())){
-                std::string new_level = getRandomMap(current_level);
-                map.load(new_level);
-                current_level = new_level;
+                newLevel = getRandomMap(currentLevel);
+                map.load(newLevel);
+                currentLevel = newLevel;
 
                 player.update(map.getPlayerPosition(), map.getWhereCameFrom());
                 playerBullets->clear();
-
-                enemies.clear();
-                positions_of_enemies = map.getEnemiesPositions();
-                for (int i = 0; i < positions_of_enemies.size(); i++){
-                    enemies.emplace_back(positions_of_enemies[i]);
-                    enemies[i].setImages(images_of_enemy);
-                }
             }
 
             player.shoot();
-            player.updateBullets();
             playerBullets = player.getBullets();
             for (Bullet& bullet : *playerBullets){
-                if (map.isWallOrIsOutOfMapBullet(bullet.getBulletEndPosition())){
+                if (map.isWallOrIsOutOfMapBullet(bullet.getEndPosition())){
                     bullet.setDestruction();
-                }
-                for (Enemy& enemy : enemies){
-                    if (enemy.gotHit(bullet.getBulletEndPosition())){
-                        player.addPoints(50);
-                        enemy.setDestruction();
-                        bullet.setDestruction();
+                } else {
+                    for (Enemy& enemy : enemies){
+                        if (enemy.gotHit(bullet.getEndPosition())){
+                            enemy.setDestruction();
+                            bullet.setDestruction();
+                            player.addPoints(50);
+                        }
                     }
                 }
             }
+            player.updateBullets();
 
-            bool brk = false;
             for (int i = 0; i < enemies.size(); i++){
-//                enemies[i].move(AStar(VecStr2CharDP(map.getMap()), 17, 24, Vector2ToV2(enemies[i].getPosition()),
-//                                      Vector2ToV2(player.getPosition())));
-                enemies[i].updateBullets();
-                enemy_bullets = enemies[i].getBullets();
-                for (Bullet& bullet : *enemy_bullets){
-                    if (player.gotHit(bullet.getBulletEndPosition())){
-                        player.removeOneLive();
-
-                        player.update(map.getPlayerPosition(), map.getWhereCameFrom());
-                        playerBullets->clear();
-
-                        enemies.clear();
-                        positions_of_enemies = map.getEnemiesPositions();
-                        for (int j = 0; j < positions_of_enemies.size(); j++){
-                            enemies.emplace_back(positions_of_enemies[j]);
-                            enemies[j].setImages(images_of_enemy);
-                        }
-                        brk = true;
+//                enemies[i].move();
+                enemyBullets = enemies[i].getBullets();
+                for (Bullet& bullet : *enemyBullets){
+                    if (map.isWallOrIsOutOfMapBullet(bullet.getEndPosition())){
+                        bullet.setDestruction();
+                    } else if (player.gotHit(bullet.getEndPosition())){
+                        restartLevel(player, map, enemies, positionsOfEnemies, imagesOfEnemy);
+                        enemyIndexes.clear();
+                        restart_level = true;
                         break;
                     }
-                    if (map.isWallOrIsOutOfMapBullet(bullet.getBulletEndPosition())){
-                        bullet.setDestruction();
-                    }
                 }
-                if (brk){
+
+                if (restart_level){
+                    restart_level = false;
+                    break;
+                }
+
+                if (enemies[i].touchedPlayer(player.getPosition())){
+                    restartLevel(player, map, enemies, positionsOfEnemies, imagesOfEnemy);
+                    enemyIndexes.clear();
+                    restart_level = true;
+                }
+
+                if (restart_level){
+                    restart_level = false;
                     break;
                 }
 
                 if (enemies[i].getDestruction()){
-                    enemies.erase(enemies.begin() + i);
-                    i = -1;
-                }
-
-            }
-            if (brk){
-                continue;
-            }
-
-            for (Enemy& enemy : enemies){
-                enemy.shoot(player.getPosition());
-                if (enemy.touchedPlayer(player.getPosition())){
-                    player.removeOneLive();
-
-                    player.update(map.getPlayerPosition(), map.getWhereCameFrom());
-                    playerBullets->clear();
-
-                    enemies.clear();
-                    positions_of_enemies = map.getEnemiesPositions();
-                    for (int i = 0; i < positions_of_enemies.size(); i++){
-                        enemies.emplace_back(positions_of_enemies[i]);
-                        enemies[i].setImages(images_of_enemy);
-                    }
-                    break;
+                    enemyIndexes.push_back(i);
+                } else {
+                    enemies[i].shoot(player.getPosition());
+                    enemies[i].updateBullets();
                 }
             }
-        }
-        if (in_congratulations_window){
+            for (int index : enemyIndexes){
+                enemies.erase(enemies.begin() + index);
+            }
+            enemyIndexes.clear();
+        } else if (congratulationsWindow.getWindowOpened()){
             congratulationsWindow.getInput();
             if (congratulationsWindow.wantsToCloseWindow()){
                 congratulationsWindow.writeHighScores();
-                congratulationsWindow.setInitialsToDefault();
+                congratulationsWindow.setWindowOpened(false);
+                highScoresWindow.setWindowOpened(true);
                 highScoresWindow.loadHighScores();
-                in_congratulations_window = false;
-                is_in_highscore_window = true;
             }
         }
 
         BeginDrawing();
         ClearBackground(BLACK);
 
-        if (is_in_highscore_window){
+        if (highScoresWindow.getWindowOpened()){
             highScoresWindow.draw();
-        }
-        if (playing){
+        } else if (map.getWindowOpened()){
             map.draw();
             player.draw();
-            for (Enemy& enemy : enemies){
+            for (const Enemy& enemy : enemies){
                 enemy.draw();
             }
-            DrawText(TextFormat("Points: %d", player.getPoints()), 50, CONSTANTS::WINDOW_HEIGHT - 35, 25, GREEN);
-            DrawText(TextFormat("Lives: %d", player.getLives()), 200, CONSTANTS::WINDOW_HEIGHT - 35, 25, GREEN);
-        }
-        if (in_congratulations_window){
+            DrawText(TextFormat("Points: %d", player.getPoints()), 60, CONSTANTS::WINDOW_HEIGHT - 40, 30, GREEN);
+            DrawText(TextFormat("Lives: %d", player.getLives()), 400, CONSTANTS::WINDOW_HEIGHT - 40, 30, GREEN);
+        } else if (congratulationsWindow.getWindowOpened()){
             congratulationsWindow.draw();
         }
 

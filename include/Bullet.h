@@ -9,11 +9,13 @@ public:
 
     void update();
     void draw() const;
-    Vector2 getBulletEndPosition();
+
+    Vector2 getEndPosition();
+
     void setDestruction();
-    bool getDestruction() const;
+    [[nodiscard]] bool getDestruction() const;
 private:
-    float speed = 0.5;
+    float speed;
     Vector2 position;
     char direction;
     bool destroy = false;

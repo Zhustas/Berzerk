@@ -1,21 +1,23 @@
 #pragma once
 
-#include <iostream>
 #include <fstream>
-#include <vector>
 #include <string>
-#include <algorithm>
 #include "raylib.h"
 #include "Constants.h"
 
-class HighScoresWindow {
+class CongratulationsWindow {
 public:
-    HighScoresWindow();
-    ~HighScoresWindow();
+    CongratulationsWindow();
+    ~CongratulationsWindow();
 
     void draw() const;
-    void loadHighScores();
-    [[nodiscard]] bool readyToPlay() const;
+
+    void setScore(int score);
+    void getInput();
+    bool wantsToCloseWindow();
+    void writeHighScores();
+
+    void setInitialsToDefault();
 
     void setWindowOpened(bool opened);
     [[nodiscard]] bool getWindowOpened() const;
@@ -23,8 +25,10 @@ private:
     const int WINDOW_WIDTH, WINDOW_HEIGHT;
     const std::string HIGH_SCORES_FILE_NAME;
 
-    std::vector<std::pair<int, std::string>> high_scores;
+    int score;
+    std::string initial;
 
-    Rectangle play_button;
+    Rectangle close_button;
+
     bool is_window_opened;
 };

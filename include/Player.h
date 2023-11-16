@@ -2,9 +2,10 @@
 
 #include <vector>
 #include <string>
-#include "Bullet.h"
 #include "raylib.h"
-#include "../include/Enemy.h"
+#include "Enemy.h"
+#include "Bullet.h"
+#include "Constants.h"
 
 class Player {
 public:
@@ -35,7 +36,7 @@ public:
 private:
     int lives = 3;
     int points = 0;
-    float speed = 0.27;
+    float speed;
     Vector2 player_position;
 
     std::string last_moves;

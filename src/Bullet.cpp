@@ -8,18 +8,6 @@ Bullet::Bullet(char direction, Vector2 position) {
 
 Bullet::~Bullet() = default;
 
-void Bullet::update(){
-    if (direction == 'W'){
-        position.y -= speed;
-    } else if (direction == 'D'){
-        position.x += speed;
-    } else if (direction == 'S'){
-        position.y += speed;
-    } else if (direction == 'A'){
-        position.x -= speed;
-    }
-}
-
 void Bullet::draw() const {
     if (direction == 'W'){
         DrawLineEx(Vector2(position.x, position.y), Vector2(position.x, position.y - 20), 2, RED);
@@ -32,7 +20,20 @@ void Bullet::draw() const {
     }
 }
 
-Vector2 Bullet::getBulletEndPosition(){
+void Bullet::update(){
+    speed = 400 * GetFrameTime();
+    if (direction == 'W'){
+        position.y -= speed;
+    } else if (direction == 'D'){
+        position.x += speed;
+    } else if (direction == 'S'){
+        position.y += speed;
+    } else if (direction == 'A'){
+        position.x -= speed;
+    }
+}
+
+Vector2 Bullet::getEndPosition(){
     if (direction == 'W'){
         return {position.x, position.y - 20};
     } else if (direction == 'D'){

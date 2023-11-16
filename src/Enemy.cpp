@@ -1,12 +1,6 @@
-#include <utility>
-
 #include "../include/Enemy.h"
-#include "../include/Utils.h"
-
-Enemy::Enemy() = default;
 
 Enemy::Enemy(Vector2 pos){
-    srand(time(nullptr));
     position = pos;
 }
 
@@ -18,7 +12,50 @@ void Enemy::setImages(Texture2D* imgs){
     }
 }
 
-void Enemy::determineMoving(bool* dirs){
+void Enemy::move(){
+    speed = (float) 130 * GetFrameTime();
+    if (moving_dirs[moving_index] == 'W') {
+        position.y -= speed;
+        last_move = 'W';
+        walked_distance += speed;
+    }
+    if (moving_dirs[moving_index] == 'D'){
+        position.x += speed;
+        last_move = 'D';
+        walked_distance += speed;
+    }
+    if (moving_dirs[moving_index] == 'S'){
+        position.y += speed;
+        last_move = 'S';
+        walked_distance += speed;
+    }
+    if (moving_dirs[moving_index] == 'A') {
+        position.x -= speed;
+        last_move = 'A';
+        walked_distance += speed;
+    }
+
+    std::cout << moving_index << ' ';
+    if (walked_distance > 30){
+        moving_index++;
+        if (moving_index == moving_dirs.size()){
+            moving_index = 0;
+        }
+        walked_distance = 0;
+    }
+//    } else if (moving_dirs[moving_index] == 'D'){
+//        position.x += speed;
+//        last_move = 'D';
+//    } else if (moving_dirs[moving_index] == 'S'){
+//        position.y += speed;
+//        last_move = 'S';
+//    } else {
+//        position.x -= speed;
+//        last_move = 'A';
+//    }
+}
+
+void Enemy::determineMoving(const bool* dirs){
     if (dirs[0]){
         moving_dirs += "WS";
     }
@@ -44,66 +81,21 @@ void Enemy::loadImages(){
     UnloadImage(current_image);
 }
 
-Texture2D Enemy::getEnemyTexture(){
-    if (last_move == 'W'){
+Texture2D Enemy::getEnemyTexture() const {
+    if (last_move == 'W' || last_move == 'S'){
         return images[0];
-    } else if (last_move == 'D'){
+    } else if (last_move == 'D' || last_move == 'A'){
         return images[1];
-    } else if (last_move == 'S'){
-        return images[2];
     }
-    return images[3];
+
 }
 
-void Enemy::draw(){
+void Enemy::draw() const {
+    std::cout << getEnemyTexture().id << ' ';
     DrawTexture(getEnemyTexture(), (int) position.x, (int) position.y, RED);
     for (const Bullet& bullet : bullets){
         bullet.draw();
     }
-}
-
-void Enemy::move(const std::string& path){
-    char first = path[0];
-
-    if (first == 'U'){
-        position.y -= speed;
-        last_move = 'W';
-    } else if (first == 'R'){
-        position.x += speed;
-        last_move = 'D';
-    } else if (first == 'D'){
-        position.y += speed;
-        last_move = 'S';
-    } else {
-        position.x -= speed;
-        last_move = 'A';
-    }
-
-    /*if (moving_dirs[moving_index] == 'W'){
-        position.y -= speed;
-        last_move = 'W';
-    } else if (moving_dirs[moving_index] == 'D'){
-        position.x += speed;
-        last_move = 'D';
-    } else if (moving_dirs[moving_index] == 'S'){
-        position.y += speed;
-        last_move = 'S';
-    } else {
-        position.x -= speed;
-        last_move = 'A';
-    }
-
-    walked_distance += speed;
-    std::cout << walked_distance << std::endl;
-    if (walked_distance >= 30){
-        if (moving_index + 1 == moving_dirs.size()){
-            moving_index = 0;
-        } else {
-            moving_index++;
-        }
-        std::cout << "Here";
-        walked_distance = 0;
-    }*/
 }
 
 Vector2 Enemy::getPosition(){
@@ -118,13 +110,6 @@ bool Enemy::getDestruction(){
     return destroy;
 }
 
-bool Enemy::canShoot() const {
-    if (time(nullptr) - current_time >= wait_for){
-        return true;
-    }
-    return false;
-}
-
 void Enemy::shoot(Vector2 player){
     if (canShoot()){
         if (position.y < player.y + 25 && player.y + 25 < position.y + 50){
@@ -136,11 +121,22 @@ void Enemy::shoot(Vector2 player){
             bullets.emplace_back(determineLastMoveForShooting(player, 'x'), position);
             shot = true;
         }
+
         if (shot){
-            wait_for = seconds_to_wait_for_shooting[rand() % (int) seconds_to_wait_for_shooting.size()];
+            int seed = (int) time(nullptr);
+            std::default_random_engine generator(seed);
+
+            wait_for = CONSTANTS::SECONDS_TO_WAIT_FOR_ENEMY_TO_SHOOT_AGAIN[generator() % (int) CONSTANTS::SECONDS_TO_WAIT_FOR_ENEMY_TO_SHOOT_AGAIN.size()];
             current_time = (int) time(nullptr);
         }
     }
+}
+
+bool Enemy::canShoot() const {
+    if (time(nullptr) - current_time >= wait_for){
+        return true;
+    }
+    return false;
 }
 
 char Enemy::determineLastMoveForShooting(Vector2 player, char for_what) const {
@@ -160,12 +156,17 @@ char Enemy::determineLastMoveForShooting(Vector2 player, char for_what) const {
 }
 
 void Enemy::updateBullets(){
+    std::vector<int> indexes;
     for (int i = 0; i < bullets.size(); i++){
-        bullets[i].update();
         if (bullets[i].getDestruction()){
-            bullets.erase(bullets.begin() + i);
-            i = -1;
+            indexes.push_back(i);
+        } else {
+            bullets[i].update();
         }
+    }
+
+    for (int index : indexes){
+        bullets.erase(bullets.begin() + index);
     }
 }
 

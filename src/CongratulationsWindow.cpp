@@ -1,9 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include "../include/CongratulationsWIndow.h"
-#include "raylib.h"
+#include "../include/CongratulationsWindow.h"
 
-CongratulationsWindow::CongratulationsWindow(const int& W_WIDTH) : WINDOW_WIDTH(W_WIDTH){}
+CongratulationsWindow::CongratulationsWindow() : WINDOW_WIDTH(CONSTANTS::WINDOW_WIDTH), WINDOW_HEIGHT(CONSTANTS::WINDOW_HEIGHT), HIGH_SCORES_FILE_NAME(CONSTANTS::HIGH_SCORES_FILE_NAME), initial("___"), is_window_opened(false),
+                                                 close_button({(float) WINDOW_WIDTH - 200, (float) WINDOW_HEIGHT - 75, 175, 50}){}
 
 CongratulationsWindow::~CongratulationsWindow() = default;
 
@@ -14,18 +12,19 @@ void CongratulationsWindow::draw() const {
     DrawText("Congratulations Player", WINDOW_WIDTH / 2 - measured_text / 2, 10, 60, YELLOW);
 
     measured_text = MeasureText("You have joined the immortals", 50);
-    DrawText("You have joined the immortals", WINDOW_WIDTH / 2 - measured_text / 2, 150, 50, Color(27, 87, 87, 100));
+    DrawText("You have joined the immortals", WINDOW_WIDTH / 2 - measured_text / 2, 150, 50, Color(38, 150, 150, 100));
 
     measured_text = MeasureText("in the BERZERK hall of fame", 45);
-    DrawText("in the BERZERK hall of fame", WINDOW_WIDTH / 2 - measured_text / 2, 210, 45, Color(27, 87, 87, 100));
+    DrawText("in the BERZERK hall of fame", WINDOW_WIDTH / 2 - measured_text / 2, 210, 45, Color(38, 150, 150, 100));
 
     measured_text = MeasureText("You have joined the immortals", 60);
-    DrawText("Enter your initials:", WINDOW_WIDTH / 2 - measured_text / 2 + 160, 340, 45, Color(27, 87, 87, 100));
+    DrawText("Enter your initials:", WINDOW_WIDTH / 2 - measured_text / 2 + 160, 340, 45, Color(38, 150, 150, 100));
 
     DrawText(initial.c_str(), WINDOW_WIDTH / 2, 400, 45, WHITE);
 
-    measured_text = MeasureText("You have joined the immortals", 50);
-    DrawText("Enter and then press ENTER to store it.", WINDOW_WIDTH / 2 - measured_text / 2, 550, 40, GREEN);
+    DrawRectangleRec(close_button, BLACK);
+    DrawRectangleLinesEx(close_button, 2, RED);
+    DrawText("Close", int(close_button.x + close_button.width / 2 - 25), int(close_button.y + close_button.height / 2 - 10), 20, WHITE);
 }
 
 void CongratulationsWindow::setScore(int scr) {
@@ -47,18 +46,23 @@ void CongratulationsWindow::getInput(){
 }
 
 bool CongratulationsWindow::wantsToCloseWindow(){
-    if (!initial.contains('_')){
-        return IsKeyPressed(KEY_ENTER);
-    }
-    return false;
+    return IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(GetMousePosition(), close_button) && !initial.contains('_');
 }
 
 void CongratulationsWindow::writeHighScores(){
-    std::ofstream file(file_name, std::ios::app);
+    std::ofstream file(HIGH_SCORES_FILE_NAME, std::ios::app);
     file << score << ' ' << initial << '\n';
     file.close();
 }
 
 void CongratulationsWindow::setInitialsToDefault(){
     initial = "___";
+}
+
+void CongratulationsWindow::setWindowOpened(bool opened){
+    is_window_opened = opened;
+}
+
+bool CongratulationsWindow::getWindowOpened() const {
+    return is_window_opened;
 }
