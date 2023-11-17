@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include <random>
 #include <string>
@@ -18,30 +17,24 @@ public:
 
     void draw() const;
 
-    bool gotHit(Vector2 bullet_end_pos) const;
-    bool touchedPlayer(Vector2 player_pos) const;
+    [[nodiscard]] bool gotHit(Vector2 bullet_end_pos) const;
+    [[nodiscard]] bool touchedPlayer(Vector2 player_pos) const;
 
     void move();
+    void determineMoving(const bool* dirs);
+
     void shoot(Vector2 player);
-    char determineLastMoveForShooting(Vector2 player, char for_what) const;
-    bool canShoot() const;
-
-    void setImages(Texture2D* imgs);
-
-    Vector2 getPosition();
+    [[nodiscard]] bool canShoot() const;
+    [[nodiscard]] char determineLastMoveForShooting(Vector2 player, char for_what) const;
 
     void loadImages();
-
     [[nodiscard]] Texture2D getEnemyTexture() const;
 
     void setDestruction();
-    bool getDestruction();
+    [[nodiscard]] bool getDestruction() const;
 
     void updateBullets();
-
-    std::vector<Bullet>* getBullets();
-
-    void determineMoving(const bool* dirs);
+    [[nodiscard]] std::vector<Bullet>* getBullets();
 private:
     Vector2 position;
 

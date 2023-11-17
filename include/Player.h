@@ -12,27 +12,28 @@ public:
     Player(Vector2 player_position, char came_from);
     ~Player();
 
-//    void update(std::vector<Enemy> enemies);
     void update(Vector2 player_position, char came_from);
-
-    void move();
-    void shoot();
-    void draw();
-    void loadImages();
-    void updateBullets();
-    bool gotHit(Vector2 bullet_end_pos);
-
-    void addPoints(int p);
-    int getPoints() const;
-    void removeOneLive();
-    int getLives() const;
-
     void setLastMove();
 
-    Vector2 getPosition() const;
+    void move();
     void cancelMoves();
 
+    void loadImages();
+    void draw();
+
+    void updateBullets();
+    void shoot();
+    [[nodiscard]] bool gotHit(Vector2 bullet_end_pos) const;
+
+    void addPoints(int p);
+    [[nodiscard]] int getPoints() const;
+    void removeOneLive();
+    [[nodiscard]] int getLives() const;
+
+
+    [[nodiscard]] Vector2 getPosition() const;
     std::vector<Bullet>* getBullets();
+    [[nodiscard]] Texture2D getPlayerTexture();
 private:
     int lives = 3;
     int points = 0;
@@ -45,6 +46,4 @@ private:
     Texture2D images[4];
 
     std::vector<Bullet> bullets;
-
-    Texture2D getPlayerTexture();
 };

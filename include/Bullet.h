@@ -7,8 +7,8 @@ public:
     Bullet(char direction, Vector2 position);
     ~Bullet();
 
-    void update();
     void draw() const;
+    void update();
 
     Vector2 getEndPosition();
 

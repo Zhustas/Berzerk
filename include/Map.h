@@ -14,26 +14,20 @@ public:
     Map(const std::string& file_name, char came_from);
     ~Map();
 
-    void load(const std::string& file_name);             // Load map
-    void draw();                                         // Draw map
+    void load(const std::string& file_name);
+    void draw();
 
-    char getWhereCameFrom() const;
+    [[nodiscard]] char getWhereCameFrom() const;
     void buildWalls();
 
+    [[nodiscard]] bool isWallBody(Vector2 position);
     bool isOutOfMapPlayer(Vector2 player_pos);
+    bool isWallOrIsOutOfMapBullet(Vector2 position);
 
-    Vector2 getPlayerPosition() const;                            // Get player position from the map
-    std::vector<Vector2> getEnemiesPositions();             // Get positions of enemies from the map
-    [[nodiscard]] bool isWallBody(Vector2 position);                // Get character at given position (when body is given)
-    bool isWallOrIsOutOfMapBullet(Vector2 position);                          //
-
-    std::string findPathToPlayer(Vector2 player_pos, Vector2 enemy_pos) const;
+    [[nodiscard]] Vector2 getPlayerPosition() const;
+    std::vector<Vector2> getEnemiesPositions();
 
     [[nodiscard]] bool* getMovingDirectionsForEnemy(Vector2 pos) const;
-    [[nodiscard]] std::vector<std::string> getMap() const;
-
-    void setWindowOpened(bool opened);
-    [[nodiscard]] bool getWindowOpened() const;
 private:
     int width, height;
     int block_size;
@@ -41,6 +35,4 @@ private:
     char came_from;
 
     std::vector<std::string> map;
-
-    bool is_window_opened;
 };

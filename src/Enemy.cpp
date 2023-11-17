@@ -7,9 +7,10 @@ Enemy::Enemy(Vector2 pos, int d_to_move){
 
 Enemy::~Enemy() = default;
 
-void Enemy::setImages(Texture2D* imgs){
-    for (int i = 0; i < 4; i++){
-        images[i] = imgs[i];
+void Enemy::draw() const {
+    DrawTexture(getEnemyTexture(), (int) position.x, (int) position.y, RED);
+    for (const Bullet& bullet : bullets){
+        bullet.draw();
     }
 }
 
@@ -65,14 +66,12 @@ void Enemy::determineMoving(const bool* dirs){
 }
 
 void Enemy::loadImages(){
-    const char* image_names[] = {"enemy-up.png", "enemy-right.png", "enemy-down.png", "enemy-left.png"};
-
     Image current_image;
     for (int i = 0; i < 4; i++){
-        current_image = LoadImage(image_names[i]);
+        current_image = LoadImage(CONSTANTS::ENEMY_IMAGES_FILE_NAMES[i].c_str());
         images[i] = LoadTextureFromImage(current_image);
+        UnloadImage(current_image);
     }
-    UnloadImage(current_image);
 }
 
 Texture2D Enemy::getEnemyTexture() const {
@@ -84,25 +83,6 @@ Texture2D Enemy::getEnemyTexture() const {
         return images[2];
     }
     return images[3];
-}
-
-void Enemy::draw() const {
-    DrawTexture(getEnemyTexture(), (int) position.x, (int) position.y, RED);
-    for (const Bullet& bullet : bullets){
-        bullet.draw();
-    }
-}
-
-Vector2 Enemy::getPosition(){
-    return position;
-}
-
-void Enemy::setDestruction(){
-    destroy = true;
-}
-
-bool Enemy::getDestruction(){
-    return destroy;
 }
 
 void Enemy::shoot(Vector2 player){
@@ -133,6 +113,21 @@ bool Enemy::canShoot() const {
     }
     return false;
 }
+
+bool Enemy::gotHit(Vector2 bullet_end_pos) const {
+    if ((position.x < bullet_end_pos.x && bullet_end_pos.x < position.x + 50) && (position.y < bullet_end_pos.y && bullet_end_pos.y < position.y + 50)){
+        return true;
+    }
+    return false;
+}
+
+bool Enemy::touchedPlayer(Vector2 player_pos) const {
+    if ((position.x < player_pos.x + 25 && player_pos.x + 25 < position.x + 50) && (position.y < player_pos.y + 25 && player_pos.y + 25 < position.y + 50)){
+        return true;
+    }
+    return false;
+}
+
 
 char Enemy::determineLastMoveForShooting(Vector2 player, char for_what) const {
     if (for_what == 'y'){
@@ -169,16 +164,10 @@ std::vector<Bullet>* Enemy::getBullets(){
     return &bullets;
 }
 
-bool Enemy::gotHit(Vector2 bullet_end_pos) const {
-    if ((position.x < bullet_end_pos.x && bullet_end_pos.x < position.x + 50) && (position.y < bullet_end_pos.y && bullet_end_pos.y < position.y + 50)){
-        return true;
-    }
-    return false;
+void Enemy::setDestruction(){
+    destroy = true;
 }
 
-bool Enemy::touchedPlayer(Vector2 player_pos) const {
-    if ((position.x < player_pos.x + 25 && player_pos.x + 25 < position.x + 50) && (position.y < player_pos.y + 25 && player_pos.y + 25 < position.y + 50)){
-        return true;
-    }
-    return false;
+bool Enemy::getDestruction() const {
+    return destroy;
 }

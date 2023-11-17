@@ -39,8 +39,7 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 
 file (GLOB SOURCES src/*.cpp include/*.h)
-add_executable(${PROJECT_NAME} ${SOURCES} main.cpp
-        src/Constants.cpp)
+add_executable(${PROJECT_NAME} ${SOURCES} main.cpp)
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

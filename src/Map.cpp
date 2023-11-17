@@ -1,6 +1,6 @@
 #include "../include/Map.h"
 
-Map::Map(const std::string &file_name, char came_from) : came_from(came_from), is_window_opened(false), width(CONSTANTS::MAP_WIDTH), height(CONSTANTS::MAP_HEIGHT), block_size(CONSTANTS::BLOCK_SIZE) {
+Map::Map(const std::string &file_name, char came_from) : width(CONSTANTS::MAP_WIDTH), height(CONSTANTS::MAP_HEIGHT), block_size(CONSTANTS::BLOCK_SIZE), came_from(came_from) {
     load(file_name);
 }
 
@@ -57,7 +57,7 @@ void Map::buildWalls(){
         map[7][width - 1] = WALL;
         map[8][width - 1] = WALL;
         map[9][width - 1] = WALL;
-    };
+    }
 }
 
 Vector2 Map::getPlayerPosition() const {
@@ -175,24 +175,4 @@ bool Map::isWallOrIsOutOfMapBullet(Vector2 position){
         return true;
     }
     return false;
-}
-
-std::string Map::findPathToPlayer(Vector2 player_pos, Vector2 enemy_pos) const {
-    int player_x = int(player_pos.x + 25) / 50, player_y = int(player_pos.y + 25) / 50;
-    int enemy_x = int(enemy_pos.x + 25) / 50, enemy_y = int(enemy_pos.y + 25) / 50;
-
-//    return A_star(VectorStringToCharPointerPointer(map), height, width, V2(enemy_y, enemy_x), V2(player_y, player_x));
-    return "";
-}
-
-std::vector<std::string> Map::getMap() const {
-    return map;
-}
-
-void Map::setWindowOpened(bool opened){
-    is_window_opened = opened;
-}
-
-bool Map::getWindowOpened() const {
-    return is_window_opened;
 }

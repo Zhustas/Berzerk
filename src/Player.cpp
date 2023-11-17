@@ -101,32 +101,6 @@ void Player::update(Vector2 ply_pos, char cm_frm){
     this->came_from = cm_frm;
 }
 
-//void Player::update(std::vector<Enemy> enemies){
-//    move();
-//    shoot();
-//
-//    Vector2 enemy_pos, p_pos = {player_position.x + 25, player_position.y + 25};
-//    for (int i = 0; i < enemies.size(); i++){
-//        enemy_pos = enemies[i].getPosition();
-//        if ((enemy_pos.x < p_pos.x && p_pos.x < enemy_pos.x + 50) && (enemy_pos.y < p_pos.y && p_pos.y < enemy_pos.y + 50)){
-//            std::cout << "TOUCHED!";
-//        }
-//        // ((enemy_pos.x < end_pos.x && end_pos.x < enemy_pos.x + 50) && (enemy_pos.y < end_pos.y && end_pos.y < enemy_pos.y + 50))
-//    }
-//
-//    std::vector<int> indexes;
-//    for (int i = 0; i < bullets.size(); i++){
-//        if (bullets[i].getDestruction()){
-//            indexes.push_back(i);
-//        }
-//        bullets[i].update();
-//    }
-//
-//    for (int index : indexes){
-//        bullets.erase(bullets.begin() + index);
-//    }
-//}
-
 void Player::updateBullets(){
     std::vector<int> indexes;
     for (int i = 0; i < bullets.size(); i++){
@@ -141,6 +115,11 @@ void Player::updateBullets(){
         bullets.erase(bullets.begin() + index);
     }
 }
+
+bool Player::gotHit(Vector2 bullet_end_pos) const {
+    return ((player_position.x < bullet_end_pos.x && bullet_end_pos.x < player_position.x + 50) && (player_position.y < bullet_end_pos.y && bullet_end_pos.y < player_position.y + 50));
+}
+
 
 std::vector<Bullet>* Player::getBullets(){
     return &bullets;
@@ -161,24 +140,3 @@ void Player::removeOneLive(){
 int Player::getLives() const {
     return lives;
 }
-
-bool Player::gotHit(Vector2 bullet_end_pos){
-    return ((player_position.x < bullet_end_pos.x && bullet_end_pos.x < player_position.x + 50) && (player_position.y < bullet_end_pos.y && bullet_end_pos.y < player_position.y + 50));
-}
-
-//void Player::updateBullet(int index, char char_at_position, std::vector<Enemy>& enemies){
-//    if (char_at_position == '#'){
-//        bullets[index].setDestruction();
-//    }
-//
-//    // 1 bullet, all enemies
-//    Vector2 end_pos = bullets[index].getBulletEndPosition(), enemy_pos;
-//    for (int i = 0; i < enemies.size(); i++){
-//        enemy_pos = enemies[i].getPosition();
-//        if ((enemy_pos.x < end_pos.x && end_pos.x < enemy_pos.x + 50) && (enemy_pos.y < end_pos.y && end_pos.y < enemy_pos.y + 50)){
-//            bullets[index].setDestruction();
-//            enemies[i].setDestruction();
-//        }
-//    }
-//}
-
