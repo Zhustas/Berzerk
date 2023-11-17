@@ -1,2 +1,2 @@
 # Berzerk
-Video game
+Video game.
