@@ -12,7 +12,7 @@
 
 class Enemy {
 public:
-    Enemy(Vector2 pos);
+    Enemy(Vector2 pos, int d_to_move);
 
     ~Enemy();
 
@@ -49,6 +49,7 @@ private:
 
     float speed;
     char last_move = 'D';
+    int distance_to_move;
 
     bool destroy = false;
 

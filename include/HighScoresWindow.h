@@ -25,6 +25,5 @@ private:
 
     std::vector<std::pair<int, std::string>> high_scores;
 
-    Rectangle play_button;
     bool is_window_opened;
 };

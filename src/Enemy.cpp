@@ -1,7 +1,8 @@
 #include "../include/Enemy.h"
 
-Enemy::Enemy(Vector2 pos){
+Enemy::Enemy(Vector2 pos, int d_to_move){
     position = pos;
+    distance_to_move = d_to_move;
 }
 
 Enemy::~Enemy() = default;
@@ -13,7 +14,7 @@ void Enemy::setImages(Texture2D* imgs){
 }
 
 void Enemy::move(){
-    speed = (float) 130 * GetFrameTime();
+    speed = (float) 40 * GetFrameTime();
     if (moving_dirs[moving_index] == 'W') {
         position.y -= speed;
         last_move = 'W';
@@ -35,24 +36,13 @@ void Enemy::move(){
         walked_distance += speed;
     }
 
-    std::cout << moving_index << ' ';
-    if (walked_distance > 30){
+    if (walked_distance > (float) distance_to_move){
         moving_index++;
         if (moving_index == moving_dirs.size()){
             moving_index = 0;
         }
         walked_distance = 0;
     }
-//    } else if (moving_dirs[moving_index] == 'D'){
-//        position.x += speed;
-//        last_move = 'D';
-//    } else if (moving_dirs[moving_index] == 'S'){
-//        position.y += speed;
-//        last_move = 'S';
-//    } else {
-//        position.x -= speed;
-//        last_move = 'A';
-//    }
 }
 
 void Enemy::determineMoving(const bool* dirs){
@@ -68,6 +58,10 @@ void Enemy::determineMoving(const bool* dirs){
     if (dirs[3]){
         moving_dirs += "AD";
     }
+
+    for (int i = 0; i < moving_dirs.size() / 2; i++){
+
+    }
 }
 
 void Enemy::loadImages(){
@@ -82,16 +76,17 @@ void Enemy::loadImages(){
 }
 
 Texture2D Enemy::getEnemyTexture() const {
-    if (last_move == 'W' || last_move == 'S'){
+    if (last_move == 'W'){
         return images[0];
-    } else if (last_move == 'D' || last_move == 'A'){
+    } else if (last_move == 'D'){
         return images[1];
+    } else if (last_move == 'S'){
+        return images[2];
     }
-
+    return images[3];
 }
 
 void Enemy::draw() const {
-    std::cout << getEnemyTexture().id << ' ';
     DrawTexture(getEnemyTexture(), (int) position.x, (int) position.y, RED);
     for (const Bullet& bullet : bullets){
         bullet.draw();

@@ -1,10 +1,6 @@
 #include "../include/HighScoresWindow.h"
 
-HighScoresWindow::HighScoresWindow() : WINDOW_WIDTH(CONSTANTS::WINDOW_WIDTH), WINDOW_HEIGHT(CONSTANTS::WINDOW_HEIGHT), HIGH_SCORES_FILE_NAME(CONSTANTS::HIGH_SCORES_FILE_NAME),
-                                       play_button({(float) WINDOW_WIDTH - 200, (float) WINDOW_HEIGHT - 175, 175, 50}), is_window_opened(true){
-    loadHighScores();
-    std::sort(high_scores.begin(), high_scores.end(), std::greater<>());
-}
+HighScoresWindow::HighScoresWindow() : WINDOW_WIDTH(CONSTANTS::WINDOW_WIDTH), WINDOW_HEIGHT(CONSTANTS::WINDOW_HEIGHT), HIGH_SCORES_FILE_NAME(CONSTANTS::HIGH_SCORES_FILE_NAME), is_window_opened(false){}
 
 HighScoresWindow::~HighScoresWindow() = default;
 
@@ -25,9 +21,6 @@ void HighScoresWindow::draw() const {
             break;
         }
     }
-    DrawRectangleRec(play_button, BLACK);
-    DrawRectangleLinesEx(play_button, 2, RED);
-    DrawText("Play", int(play_button.x + play_button.width / 2 - 20), int(play_button.y + play_button.height / 2 - 10), 20, WHITE);
     DrawLineEx({0, float(WINDOW_HEIGHT - 100)}, {(float) WINDOW_WIDTH, float(WINDOW_HEIGHT - 100)}, 5, WHITE);
 }
 
@@ -42,6 +35,8 @@ void HighScoresWindow::loadHighScores(){
         while (file >> score >> initial){
             high_scores.emplace_back(score, initial);
         }
+        std::sort(high_scores.begin(), high_scores.end(), std::greater<>());
+
         file.close();
     } else {
         std::cout << "Failed to open " << HIGH_SCORES_FILE_NAME << std::endl;
@@ -49,7 +44,7 @@ void HighScoresWindow::loadHighScores(){
 }
 
 bool HighScoresWindow::readyToPlay() const {
-    return IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(GetMousePosition(), play_button);
+    return IsKeyPressed(KEY_P);
 }
 
 void HighScoresWindow::setWindowOpened(bool opened) {
