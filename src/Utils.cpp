@@ -34,7 +34,7 @@ void restartLevel(Player& player, const Map& map, std::vector<Enemy>& enemies, c
     for (int i = 0; i < positionsOfEnemies.size(); i++){
         enemies.emplace_back(positionsOfEnemies[i], CONSTANTS::DISTANCE_TO_MOVE_FOR_ENEMY[generator() % CONSTANTS::DISTANCE_TO_MOVE_FOR_ENEMY.size()]);
         enemies[i].determineMoving(map.getMovingDirectionsForEnemy(positionsOfEnemies[i]));
-        enemies[i].loadImages();
+        enemies[i].loadImages(CONSTANTS::ENEMY_IMAGES_FILE_NAMES);
     }
 }
 
@@ -48,7 +48,7 @@ void changeLevel(Player& player, std::vector<Bullet>* playerBullets, Map& map, s
     std::default_random_engine generator(seed);
     for (int i = 0; i < positionsOfEnemies.size(); i++){
         enemies.emplace_back(positionsOfEnemies[i], CONSTANTS::DISTANCE_TO_MOVE_FOR_ENEMY[generator() % CONSTANTS::DISTANCE_TO_MOVE_FOR_ENEMY.size()]);
-        enemies[i].loadImages();
+        enemies[i].loadImages(CONSTANTS::ENEMY_IMAGES_FILE_NAMES);
         enemies[i].determineMoving(map.getMovingDirectionsForEnemy(positionsOfEnemies[i]));
     }
 }

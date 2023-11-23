@@ -70,14 +70,14 @@ void play(int& points){
 
     SetTraceLogLevel(LOG_NONE);
     InitWindow(CONSTANTS::WINDOW_WIDTH, CONSTANTS::WINDOW_HEIGHT, CONSTANTS::TITLE.c_str());
-    player.loadImages();
+    player.loadImages(CONSTANTS::PLAYER_IMAGES_FILE_NAMES);
 
     int seed = (int) time(nullptr);
     std::default_random_engine generator(seed);
     for (int i = 0; i < positions_of_enemies.size(); i++){
         enemies.emplace_back(positions_of_enemies[i], CONSTANTS::DISTANCE_TO_MOVE_FOR_ENEMY[generator() % CONSTANTS::DISTANCE_TO_MOVE_FOR_ENEMY.size()]);
         enemies[i].determineMoving(map.getMovingDirectionsForEnemy(positions_of_enemies[i]));
-        enemies[i].loadImages();
+        enemies[i].loadImages(CONSTANTS::ENEMY_IMAGES_FILE_NAMES);
     }
 
     SetTargetFPS(60);

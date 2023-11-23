@@ -3,16 +3,10 @@
 Enemy::Enemy(Vector2 pos, int d_to_move){
     position = pos;
     distance_to_move = d_to_move;
+    tint = RED;
 }
 
 Enemy::~Enemy() = default;
-
-void Enemy::draw() const {
-    DrawTexture(getEnemyTexture(), (int) position.x, (int) position.y, RED);
-    for (const Bullet& bullet : bullets){
-        bullet.draw();
-    }
-}
 
 void Enemy::move(){
     speed = (float) 40 * GetFrameTime();
@@ -65,26 +59,6 @@ void Enemy::determineMoving(const bool* dirs){
     }
 }
 
-void Enemy::loadImages(){
-    Image current_image;
-    for (int i = 0; i < 4; i++){
-        current_image = LoadImage(CONSTANTS::ENEMY_IMAGES_FILE_NAMES[i].c_str());
-        images[i] = LoadTextureFromImage(current_image);
-        UnloadImage(current_image);
-    }
-}
-
-Texture2D Enemy::getEnemyTexture() const {
-    if (last_move == 'W'){
-        return images[0];
-    } else if (last_move == 'D'){
-        return images[1];
-    } else if (last_move == 'S'){
-        return images[2];
-    }
-    return images[3];
-}
-
 void Enemy::shoot(Vector2 player){
     if (canShoot()){
         if (position.y < player.y + 25 && player.y + 25 < position.y + 50){
@@ -114,13 +88,6 @@ bool Enemy::canShoot() const {
     return false;
 }
 
-bool Enemy::gotHit(Vector2 bullet_end_pos) const {
-    if ((position.x < bullet_end_pos.x && bullet_end_pos.x < position.x + 50) && (position.y < bullet_end_pos.y && bullet_end_pos.y < position.y + 50)){
-        return true;
-    }
-    return false;
-}
-
 bool Enemy::touchedPlayer(Vector2 player_pos) const {
     if ((position.x < player_pos.x + 25 && player_pos.x + 25 < position.x + 50) && (position.y < player_pos.y + 25 && player_pos.y + 25 < position.y + 50)){
         return true;
@@ -143,25 +110,6 @@ char Enemy::determineLastMoveForShooting(Vector2 player, char for_what) const {
             return 'S';
         }
     }
-}
-
-void Enemy::updateBullets(){
-    std::vector<int> indexes;
-    for (int i = 0; i < bullets.size(); i++){
-        if (bullets[i].getDestruction()){
-            indexes.push_back(i);
-        } else {
-            bullets[i].update();
-        }
-    }
-
-    for (int index : indexes){
-        bullets.erase(bullets.begin() + index);
-    }
-}
-
-std::vector<Bullet>* Enemy::getBullets(){
-    return &bullets;
 }
 
 void Enemy::setDestruction(){

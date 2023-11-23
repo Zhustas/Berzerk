@@ -8,45 +8,30 @@
 #include "raylib.h"
 #include "Bullet.h"
 #include "Constants.h"
+#include "Body.h"
 
-class Enemy {
+class Enemy : public Body {
 public:
     Enemy(Vector2 pos, int d_to_move);
 
     ~Enemy();
 
-    void draw() const;
-
-    [[nodiscard]] bool gotHit(Vector2 bullet_end_pos) const;
     [[nodiscard]] bool touchedPlayer(Vector2 player_pos) const;
 
-    void move();
+    void move() override;
     void determineMoving(const bool* dirs);
 
     void shoot(Vector2 player);
     [[nodiscard]] bool canShoot() const;
     [[nodiscard]] char determineLastMoveForShooting(Vector2 player, char for_what) const;
 
-    void loadImages();
-    [[nodiscard]] Texture2D getEnemyTexture() const;
-
     void setDestruction();
     [[nodiscard]] bool getDestruction() const;
-
-    void updateBullets();
-    [[nodiscard]] std::vector<Bullet>* getBullets();
 private:
-    Vector2 position;
-
-    Texture2D images[4];
-
-    float speed;
-    char last_move = 'D';
     int distance_to_move;
 
     bool destroy = false;
 
-    std::vector<Bullet> bullets;
     bool shot = false;
     int wait_for = 0, current_time = 0;
     std::vector<int> seconds_to_wait_for_shooting = {1, 2, 3};
