@@ -41,7 +41,8 @@ set(CMAKE_CXX_STANDARD 23)
 file (GLOB SOURCES src/*.cpp include/*.h)
 add_executable(${PROJECT_NAME} ${SOURCES} main.cpp
         include/Body.h
-        src/Body.cpp)
+        src/Body.cpp
+        include/Move.h)
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
