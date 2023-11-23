@@ -138,7 +138,6 @@ bool Map::isWallBody(Vector2 position){
             return true;
         }
     }
-
     position.x += 45;
     position.y += 5;
     if (position.y / 50 >= (float) height || position.x / 50 >= (float) width) {
@@ -148,7 +147,6 @@ bool Map::isWallBody(Vector2 position){
             return true;
         }
     }
-
     position.y += 40;
     if (position.y / 50 >= (float) height){
         return false;
@@ -157,12 +155,10 @@ bool Map::isWallBody(Vector2 position){
             return true;
         }
     }
-
     position.x -= 45;
     if (map[int(position.y / 50)][int(position.x / 50)] == WALL){
         return true;
     }
-
     return false;
 }
 
