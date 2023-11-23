@@ -3,6 +3,12 @@
 Enemy::Enemy(Vector2 pos, int d_to_move){
     position = pos;
     distance_to_move = d_to_move;
+    destroy = false;
+    shot = false;
+    wait_for = 0;
+    current_time = 0;
+    walked_distance = 0.0;
+    moving_index = 0;
     tint = RED;
 }
 
@@ -52,10 +58,6 @@ void Enemy::determineMoving(const bool* dirs){
     }
     if (dirs[3]){
         moving_dirs += "AD";
-    }
-
-    for (int i = 0; i < moving_dirs.size() / 2; i++){
-
     }
 }
 

@@ -30,13 +30,13 @@ public:
 private:
     int distance_to_move;
 
-    bool destroy = false;
+    bool destroy;
 
-    bool shot = false;
-    int wait_for = 0, current_time = 0;
-    std::vector<int> seconds_to_wait_for_shooting = {1, 2, 3};
+    bool shot;
+    int wait_for;
+    int current_time;
 
     std::string moving_dirs;
-    float walked_distance = 0;
-    int moving_index = 0;
+    float walked_distance;
+    int moving_index;
 };

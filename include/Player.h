@@ -26,8 +26,8 @@ public:
     [[nodiscard]] int getLives() const;
     [[nodiscard]] Vector2 getPosition() const;
 private:
-    int lives = 3;
-    int points = 0;
+    int lives;
+    int points;
 
     std::string last_moves;
     char came_from;

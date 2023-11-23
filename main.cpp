@@ -18,7 +18,7 @@ void writeHighScore(const int& points, const std::string& initial);
 void menu();
 
 int main(){
-    int points;
+    int points = 0;
     std::string initial;
 
     int choice = 0;
@@ -39,6 +39,7 @@ int main(){
                     }
                     writeHighScore(points, initial);
                 }
+                points = 0;
                 break;
             case 2:
                 showHighScores();

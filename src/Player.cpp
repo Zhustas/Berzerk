@@ -3,6 +3,8 @@
 Player::Player(Vector2 player_position, char came_from){
     this->position = player_position;
     this->came_from = came_from;
+    lives = 3;
+    points = 0;
     tint = RAYWHITE;
     setLastMove();
 }

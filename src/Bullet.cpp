@@ -4,6 +4,7 @@
 Bullet::Bullet(char direction, Vector2 position) {
     this->direction = direction;
     this->position = {position.x + 25, position.y + 25};
+    destroy = false;
 }
 
 Bullet::~Bullet() = default;

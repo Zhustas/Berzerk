@@ -18,5 +18,5 @@ private:
     float speed;
     Vector2 position;
     char direction;
-    bool destroy = false;
+    bool destroy;
 };
