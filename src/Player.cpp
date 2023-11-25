@@ -1,10 +1,12 @@
 #include "../include/Player.h"
 
-Player::Player(Vector2 player_position, char came_from){
+void Player::construct(Vector2 player_position, char cm_frm){
     this->position = player_position;
-    this->came_from = came_from;
+    block_size = 50;
+    this->came_from = cm_frm;
     lives = 3;
     points = 0;
+    speed_booster = 130;
     tint = RAYWHITE;
     setLastMove();
 }
@@ -29,7 +31,7 @@ void Player::shoot(){
 }
 
 void Player::move(){
-    speed = (float) 130 * GetFrameTime();
+    speed = speed_booster * GetFrameTime();
     last_moves = "";
     if (IsKeyDown('W')){
         position.y -= speed;
@@ -66,10 +68,6 @@ void Player::cancelMoves(){
             position.x += speed;
         }
     }
-}
-
-Vector2 Player::getPosition() const {
-    return position;
 }
 
 void Player::update(Vector2 ply_pos, char cm_frm){

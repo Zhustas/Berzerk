@@ -3,10 +3,8 @@
 #include <vector>
 #include <random>
 #include <string>
-#include <cstdlib>
 #include <ctime>
 #include "raylib.h"
-#include "Bullet.h"
 #include "Constants.h"
 #include "Body.h"
 
@@ -29,6 +27,7 @@ public:
     [[nodiscard]] bool getDestruction() const;
 private:
     int distance_to_move;
+    float distance_to_object_center;
 
     bool destroy;
 

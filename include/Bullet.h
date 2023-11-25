@@ -4,7 +4,7 @@
 
 class Bullet {
 public:
-    Bullet(char direction, Vector2 position);
+    Bullet(char direction, Vector2 pos);
     ~Bullet();
 
     void draw() const;
@@ -16,6 +16,8 @@ public:
     [[nodiscard]] bool getDestruction() const;
 private:
     float speed;
+    float speed_booster;
+    float bullet_length;
     Vector2 position;
     char direction;
     bool destroy;

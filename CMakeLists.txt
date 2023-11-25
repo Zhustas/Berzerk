@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
 project(Game)
 
+add_subdirectory(UnitTests)
+
 file(GLOB LEVELS levels/*)
 foreach(X IN LISTS LEVELS)
     configure_file(${X} ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
@@ -39,10 +41,7 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 
 file (GLOB SOURCES src/*.cpp include/*.h)
-add_executable(${PROJECT_NAME} ${SOURCES} main.cpp
-        include/Body.h
-        src/Body.cpp
-        include/Move.h)
+add_executable(${PROJECT_NAME} ${SOURCES} main.cpp)
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

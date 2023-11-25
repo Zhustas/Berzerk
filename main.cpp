@@ -17,6 +17,8 @@ void showHighScores();
 void writeHighScore(const int& points, const std::string& initial);
 void menu();
 
+Player* Player::player = new Player;
+
 int main(){
     int points = 0;
     std::string initial;
@@ -61,7 +63,8 @@ void play(int& points){
     std::string current_level = getRandomMap(""), new_level;
     Map map(current_level, 'L');
 
-    Player player(map.getPlayerPosition(), map.getWhereCameFrom());
+    Player* player = Player::getPlayer();
+    player->construct(map.getPlayerPosition(), map.getWhereCameFrom());
     std::vector<Bullet>* player_bullets;
 
     std::vector<Enemy> enemies;
@@ -71,7 +74,7 @@ void play(int& points){
 
     SetTraceLogLevel(LOG_NONE);
     InitWindow(CONSTANTS::WINDOW_WIDTH, CONSTANTS::WINDOW_HEIGHT, CONSTANTS::TITLE.c_str());
-    player.loadImages(CONSTANTS::PLAYER_IMAGES_FILE_NAMES);
+    player->loadImages(CONSTANTS::PLAYER_IMAGES_FILE_NAMES);
 
     int seed = (int) time(nullptr);
     std::default_random_engine generator(seed);
@@ -83,26 +86,26 @@ void play(int& points){
 
     SetTargetFPS(60);
     while (!WindowShouldClose()){
-        if (player.getLives() == 0){
-            points = player.getPoints();
+        if (player->getLives() == 0){
+            points = player->getPoints();
             break;
         }
 
-        player.move();
-        if (map.isWallBody(player.getPosition())){
-            player.cancelMoves();
+        player->move();
+        if (map.isWallBody(player->getPosition())){
+            player->cancelMoves();
         }
-        if (map.isOutOfMapPlayer(player.getPosition())){
+        if (map.isOutOfMapPlayer(player->getPosition())){
             new_level = getRandomMap(current_level);
             map.load(new_level);
             current_level = new_level;
-            changeLevel(player, player_bullets, map, enemies, positions_of_enemies);
+            changeLevel(player_bullets, map, enemies, positions_of_enemies);
             level_changed = true;
         }
 
         if (!level_changed){
-            player.shoot();
-            player_bullets = player.getBullets();
+            player->shoot();
+            player_bullets = player->getBullets();
             for (Bullet& bullet : *player_bullets){
                 if (map.isWallOrIsOutOfMapBullet(bullet.getEndPosition())){
                     bullet.setDestruction();
@@ -111,12 +114,12 @@ void play(int& points){
                         if (enemy.gotHit(bullet.getEndPosition())){
                             enemy.setDestruction();
                             bullet.setDestruction();
-                            player.addPoints(50);
+                            player->addPoints(50);
                         }
                     }
                 }
             }
-            player.updateBullets();
+            player->updateBullets();
 
             for (int i = 0; i < enemies.size(); i++){
                 if (enemies[i].getDestruction()){
@@ -131,20 +134,20 @@ void play(int& points){
             for (int i = 0; i < enemies.size(); i++){
                 enemies[i].move();
 
-                enemies[i].shoot(player.getPosition());
+                enemies[i].shoot(player->getPosition());
                 enemy_bullets = enemies[i].getBullets();
                 for (Bullet& bullet : *enemy_bullets){
                     if (map.isWallOrIsOutOfMapBullet(bullet.getEndPosition())){
                         bullet.setDestruction();
-                    } else if (player.gotHit(bullet.getEndPosition())){
-                        restartLevel(player, map, enemies, positions_of_enemies);
+                    } else if (player->gotHit(bullet.getEndPosition())){
+                        restartLevel(map, enemies, positions_of_enemies);
                         break;
                     }
                 }
                 enemies[i].updateBullets();
 
-                if (enemies[i].touchedPlayer(player.getPosition())){
-                    restartLevel(player, map, enemies, positions_of_enemies);
+                if (enemies[i].touchedPlayer(player->getPosition())){
+                    restartLevel(map, enemies, positions_of_enemies);
                 }
             }
         } else {
@@ -155,12 +158,12 @@ void play(int& points){
         ClearBackground(BLACK);
 
         map.draw();
-        player.draw();
+        player->draw();
         for (const Enemy& enemy : enemies){
             enemy.draw();
         }
-        DrawText(TextFormat("Points: %d", player.getPoints()), 60, CONSTANTS::WINDOW_HEIGHT - 40, 30, GREEN);
-        DrawText(TextFormat("Lives: %d", player.getLives()), 400, CONSTANTS::WINDOW_HEIGHT - 40, 30, GREEN);
+        DrawText(TextFormat("Points: %d", player->getPoints()), 60, CONSTANTS::WINDOW_HEIGHT - 40, 30, GREEN);
+        DrawText(TextFormat("Lives: %d", player->getLives()), 400, CONSTANTS::WINDOW_HEIGHT - 40, 30, GREEN);
 
         EndDrawing();
     }

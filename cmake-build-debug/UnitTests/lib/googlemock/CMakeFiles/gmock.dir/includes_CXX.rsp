@@ -1,0 +1,1 @@
+-I"D:/Program system project/Berzerk/UnitTests/lib/googlemock/include" -I"D:/Program system project/Berzerk/UnitTests/lib/googlemock" -isystem "D:/Program system project/Berzerk/UnitTests/lib/googletest/include" -isystem "D:/Program system project/Berzerk/UnitTests/lib/googletest"

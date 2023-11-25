@@ -8,6 +8,7 @@
 #include "Constants.h"
 
 #define WALL '#'
+#define ENEMY 'E'
 
 class Map {
 public:
@@ -15,7 +16,7 @@ public:
     ~Map();
 
     void load(const std::string& file_name);
-    void draw();
+    void draw() const;
 
     [[nodiscard]] char getWhereCameFrom() const;
     void buildWalls();
@@ -31,6 +32,8 @@ public:
 private:
     int width, height;
     int block_size;
+
+    Vector2 up_coordinates, right_coordinates, down_coordinates, left_coordinates;
 
     char came_from;
 

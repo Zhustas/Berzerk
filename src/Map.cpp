@@ -2,11 +2,15 @@
 
 Map::Map(const std::string &file_name, char came_from) : width(CONSTANTS::MAP_WIDTH), height(CONSTANTS::MAP_HEIGHT), block_size(CONSTANTS::BLOCK_SIZE), came_from(came_from) {
     load(file_name);
+    up_coordinates = {600, 50};
+    right_coordinates = {1000, 400};
+    down_coordinates = {600, 750};
+    left_coordinates = {100, 400};
 }
 
 Map::~Map() = default;
 
-void Map::draw(){
+void Map::draw() const {
     int offset_x = 0, offset_y = 0;
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
@@ -62,13 +66,13 @@ void Map::buildWalls(){
 
 Vector2 Map::getPlayerPosition() const {
     if (came_from == 'L'){
-        return {100, 400};
+        return left_coordinates;
     } else if (came_from == 'D'){
-        return {600, 15 * 50};
+        return down_coordinates;
     } else if (came_from == 'U'){
-        return {600, 50};
+        return up_coordinates;
     }
-    return {1000, 400};
+    return right_coordinates;
 }
 
 char Map::getWhereCameFrom() const {
@@ -79,13 +83,13 @@ bool Map::isOutOfMapPlayer(Vector2 player_pos) {
     if (player_pos.x < 0){
         came_from = 'R';
         return true;
-    } else if (player_pos.x > float(width * 50)){
+    } else if (player_pos.x > float(width * block_size)){
         came_from = 'L';
         return true;
     } else if (player_pos.y < 0){
         came_from = 'D';
         return true;
-    } else if (player_pos.y > float(height * 50)){
+    } else if (player_pos.y > float(height * block_size)){
         came_from = 'U';
         return true;
     }
@@ -95,10 +99,10 @@ bool Map::isOutOfMapPlayer(Vector2 player_pos) {
 std::vector<Vector2> Map::getEnemiesPositions(){
     std::vector<Vector2> positions;
     for (int i = 0; i < height; i++){
-        if (map[i].contains('E')){
+        if (map[i].contains(ENEMY)){
             for (int j = 0; j < width; j++){
-                if (map[i][j] == 'E'){
-                    positions.emplace_back(50 * j, 50 * i);
+                if (map[i][j] == ENEMY){
+                    positions.emplace_back(block_size * j, block_size * i);
                 }
             }
         }
@@ -107,7 +111,7 @@ std::vector<Vector2> Map::getEnemiesPositions(){
 }
 
 bool* Map::getMovingDirectionsForEnemy(Vector2 pos) const {
-    int i = (int) pos.y / 50, j = (int) pos.x / 50;
+    int i = (int) pos.y / block_size, j = (int) pos.x / block_size;
 
     bool* dirs = new bool[4];
     dirs[0] = false;
@@ -131,39 +135,39 @@ bool* Map::getMovingDirectionsForEnemy(Vector2 pos) const {
 }
 
 bool Map::isWallBody(Vector2 position){
-    if ((position.y + 5) / 50 >= (float) height || (position.x + 5) / 50 >= (float) width){
+    if ((position.y + 5) / (float) block_size >= (float) height || (position.x + 5) / (float) block_size >= (float) width){
         return false;
     } else {
-        if (map[int((position.y + 5) / 50)][int((position.x + 5) / 50)] == WALL){
+        if (map[int((position.y + 5) / (float) block_size)][int((position.x + 5) / (float) block_size)] == WALL){
             return true;
         }
     }
     position.x += 45;
     position.y += 5;
-    if (position.y / 50 >= (float) height || position.x / 50 >= (float) width) {
+    if (position.y / (float) block_size >= (float) height || position.x / (float) block_size >= (float) width) {
         return false;
     } else {
-        if (map[int(position.y / 50)][int(position.x / 50)] == WALL){
+        if (map[int(position.y / (float) block_size)][int(position.x / (float) block_size)] == WALL){
             return true;
         }
     }
     position.y += 40;
-    if (position.y / 50 >= (float) height){
+    if (position.y / (float) block_size >= (float) height){
         return false;
     } else {
-        if (map[int(position.y / 50)][int(position.x / 50)] == WALL){
+        if (map[int(position.y / (float) block_size)][int(position.x / (float) block_size)] == WALL){
             return true;
         }
     }
     position.x -= 45;
-    if (map[int(position.y / 50)][int(position.x / 50)] == WALL){
+    if (map[int(position.y / (float) block_size)][int(position.x / (float) block_size)] == WALL){
         return true;
     }
     return false;
 }
 
 bool Map::isWallOrIsOutOfMapBullet(Vector2 position){
-    int j = int(position.y / 50), i = int(position.x / 50);
+    int j = int(position.y / (float) block_size), i = int(position.x / (float) block_size);
     if (j < 0 || i < 0 || j >= height || i >= width){
         return true;
     }

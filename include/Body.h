@@ -4,7 +4,6 @@
 #include <string>
 #include "raylib.h"
 #include "Bullet.h"
-#include "Constants.h"
 
 class Body {
 public:
@@ -17,9 +16,13 @@ public:
     void updateBullets();
     [[nodiscard]] std::vector<Bullet>* getBullets();
     [[nodiscard]] bool gotHit(Vector2 bullet_end_pos) const;
+
+    [[nodiscard]] Vector2 getPosition() const;
 protected:
     float speed;
+    float speed_booster;
     Vector2 position;
+    int block_size;
     char last_move;
 
     Texture2D images[4];

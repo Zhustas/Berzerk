@@ -1,9 +1,10 @@
 #include "../include/Bullet.h"
-#include "raylib.h"
 
-Bullet::Bullet(char direction, Vector2 position) {
+Bullet::Bullet(char direction, Vector2 pos) {
     this->direction = direction;
-    this->position = {position.x + 25, position.y + 25};
+    this->position = {pos.x + 25, pos.y + 25};
+    speed_booster = 400;
+    bullet_length = 20;
     destroy = false;
 }
 
@@ -11,18 +12,18 @@ Bullet::~Bullet() = default;
 
 void Bullet::draw() const {
     if (direction == 'W'){
-        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x, position.y - 20), 2, RED);
+        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x, position.y - bullet_length), 2, RED);
     } else if (direction == 'D'){
-        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x + 20, position.y), 2, RED);
+        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x + bullet_length, position.y), 2, RED);
     } else if (direction == 'S'){
-        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x, position.y + 20), 2, RED);
+        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x, position.y + bullet_length), 2, RED);
     } else if (direction == 'A'){
-        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x - 20, position.y), 2, RED);
+        DrawLineEx(Vector2(position.x, position.y), Vector2(position.x - bullet_length, position.y), 2, RED);
     }
 }
 
 void Bullet::update(){
-    speed = 400 * GetFrameTime();
+    speed = speed_booster * GetFrameTime();
     if (direction == 'W'){
         position.y -= speed;
     } else if (direction == 'D'){
@@ -36,13 +37,13 @@ void Bullet::update(){
 
 Vector2 Bullet::getEndPosition(){
     if (direction == 'W'){
-        return {position.x, position.y - 20};
+        return {position.x, position.y - bullet_length};
     } else if (direction == 'D'){
-        return {position.x + 20, position.y};
+        return {position.x + bullet_length, position.y};
     } else if (direction == 'S'){
-        return {position.x, position.y + 20};
+        return {position.x, position.y + bullet_length};
     } else if (direction == 'A'){
-        return {position.x - 20, position.y};
+        return {position.x - bullet_length, position.y};
     }
 }
 

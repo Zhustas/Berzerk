@@ -28,7 +28,7 @@ void Body::loadImages(const std::vector<std::string>& image_paths) {
 }
 
 bool Body::gotHit(Vector2 bullet_end_pos) const {
-    return (position.x < bullet_end_pos.x && bullet_end_pos.x < position.x + 50) && (position.y < bullet_end_pos.y && bullet_end_pos.y < position.y + 50);
+    return (position.x < bullet_end_pos.x && bullet_end_pos.x < position.x + (float) block_size) && (position.y < bullet_end_pos.y && bullet_end_pos.y < position.y + (float) block_size);
 }
 
 void Body::updateBullets(){
@@ -48,4 +48,8 @@ void Body::updateBullets(){
 
 std::vector<Bullet>* Body::getBullets() {
     return &bullets;
+}
+
+Vector2 Body::getPosition() const {
+    return position;
 }

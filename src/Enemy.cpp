@@ -2,6 +2,9 @@
 
 Enemy::Enemy(Vector2 pos, int d_to_move){
     position = pos;
+    block_size = 50;
+    distance_to_object_center = 25;
+    speed_booster = 40;
     distance_to_move = d_to_move;
     destroy = false;
     shot = false;
@@ -15,7 +18,7 @@ Enemy::Enemy(Vector2 pos, int d_to_move){
 Enemy::~Enemy() = default;
 
 void Enemy::move(){
-    speed = (float) 40 * GetFrameTime();
+    speed = speed_booster * GetFrameTime();
     if (moving_dirs[moving_index] == 'W') {
         position.y -= speed;
         last_move = 'W';
@@ -63,12 +66,12 @@ void Enemy::determineMoving(const bool* dirs){
 
 void Enemy::shoot(Vector2 player){
     if (canShoot()){
-        if (position.y < player.y + 25 && player.y + 25 < position.y + 50){
+        if (position.y < player.y + distance_to_object_center && player.y + distance_to_object_center < position.y + (float) block_size){
             bullets.emplace_back(determineLastMoveForShooting(player, 'y'), position);
             shot = true;
 
         }
-        if (position.x < player.x + 25 && player.x + 25 < position.x + 50) {
+        if (position.x < player.x + distance_to_object_center && player.x + distance_to_object_center < position.x + (float) block_size) {
             bullets.emplace_back(determineLastMoveForShooting(player, 'x'), position);
             shot = true;
         }
@@ -91,7 +94,7 @@ bool Enemy::canShoot() const {
 }
 
 bool Enemy::touchedPlayer(Vector2 player_pos) const {
-    if ((position.x < player_pos.x + 25 && player_pos.x + 25 < position.x + 50) && (position.y < player_pos.y + 25 && player_pos.y + 25 < position.y + 50)){
+    if ((position.x < player_pos.x + distance_to_object_center && player_pos.x + distance_to_object_center < position.x + (float) block_size) && (position.y < player_pos.y + distance_to_object_center && player_pos.y + distance_to_object_center < position.y + (float) block_size)){
         return true;
     }
     return false;
