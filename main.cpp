@@ -183,8 +183,12 @@ void showHighScores(){
         std::sort(high_scores.begin(), high_scores.end(), std::greater<>());
         file.close();
 
-        for (int i = 1; i <= high_scores.size(); i++){
-            std::cout << "\t#" << i << "   " << high_scores[i - 1].first << ' ' << high_scores[i - 1].second << std::endl;
+        if (!high_scores.empty()){
+            for (int i = 1; i <= high_scores.size(); i++){
+                std::cout << "\t#" << i << "   " << high_scores[i - 1].first << ' ' << high_scores[i - 1].second << std::endl;
+            }
+        } else {
+            std::cout << "Not high scores to show." << std::endl;
         }
     } else {
         std::cout << "Failed to open " << CONSTANTS::HIGH_SCORES_FILE_NAME << '.' << std::endl;
