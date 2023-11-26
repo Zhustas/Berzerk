@@ -140,14 +140,14 @@ void play(int& points){
                     if (map.isWallOrIsOutOfMapBullet(bullet.getEndPosition())){
                         bullet.setDestruction();
                     } else if (player->gotHit(bullet.getEndPosition())){
-                        restartLevel(map, enemies, positions_of_enemies);
+                        restartLevel(player_bullets, map, enemies, positions_of_enemies);
                         break;
                     }
                 }
                 enemies[i].updateBullets();
 
                 if (enemies[i].touchedPlayer(player->getPosition())){
-                    restartLevel(map, enemies, positions_of_enemies);
+                    restartLevel(player_bullets, map, enemies, positions_of_enemies);
                 }
             }
         } else {
@@ -188,7 +188,7 @@ void showHighScores(){
                 std::cout << "\t#" << i << "   " << high_scores[i - 1].first << ' ' << high_scores[i - 1].second << std::endl;
             }
         } else {
-            std::cout << "Not high scores to show." << std::endl;
+            std::cout << "No high scores to show." << std::endl;
         }
     } else {
         std::cout << "Failed to open " << CONSTANTS::HIGH_SCORES_FILE_NAME << '.' << std::endl;
