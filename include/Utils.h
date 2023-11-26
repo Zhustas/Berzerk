@@ -12,5 +12,5 @@
 
 std::string getRandomMap(const std::string& current_map);
 
-void restartLevel(const Map& map, std::vector<Enemy>& enemies, const std::vector<Vector2>& positionsOfEnemies);
+void restartLevel(std::vector<Bullet>* playerBullets, const Map& map, std::vector<Enemy>& enemies, const std::vector<Vector2>& positionsOfEnemies);
 void changeLevel(std::vector<Bullet>* playerBullets, Map& map, std::vector<Enemy>& enemies, std::vector<Vector2>& positionsOfEnemies);

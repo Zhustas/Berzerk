@@ -23,12 +23,14 @@ std::string getRandomMap(const std::string& current_map){
     return CONSTANTS::LEVELS[new_map_index];
 }
 
-void restartLevel(const Map& map, std::vector<Enemy>& enemies, const std::vector<Vector2>& positionsOfEnemies){
+void restartLevel(std::vector<Bullet>* playerBullets, const Map& map, std::vector<Enemy>& enemies, const std::vector<Vector2>& positionsOfEnemies){
     Player* player = Player::getPlayer();
 
     player->removeOneLive();
 
     player->update(map.getPlayerPosition(), map.getWhereCameFrom());
+
+    playerBullets->clear();
 
     enemies.clear();
     int seed = (int) time(nullptr);
